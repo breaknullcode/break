@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 启用注解，并定义组件查找规则-->
+    <context:component-scan base-package="com.education">
+        <context:include-filter type="regex" expression=".*controller.*"/>
+        <context:include-filter type="regex" expression=".*manager.*"/>
+        <context:include-filter type="regex" expression=".*business.*"/>
+        <context:include-filter type="regex" expression=".*dao.*"/>
+    </context:component-scan>
+
+    <!-- 对静态资源文件的访问，交给default servlet handler处理 -->
+    <mvc:default-servlet-handler/>
+
+    <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射-->
+    <bean id="annotationMethodHandlerAdapter"
+          class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <bean id="messageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+          p:basename="classpath:message">
+        <property name="defaultEncoding" value="utf-8"/>
+    </bean>
+
+    <!-- 根据客户端的不同的请求决定不同的view进行响应, 如 /blog/1.json /blog/1.xml -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <!-- 内容导航管理器-->
+        <property name="contentNegotiationManager" ref="contentNegotiationManager"/>
+        <!-- 视图解析器 -->
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+                    <property name="prefix" value="/WEB-INF/pages/"/>
+                    <property name="suffix" value=".jsp"></property>
+                </bean>
+            </list>
+        </property>
+        <!-- 默认显示的视图列表-->
+        <property name="defaultViews">
+            <list>
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+                <bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+                    <property name="marshaller">
+                        <bean class="org.springframework.oxm.xstream.XStreamMarshaller"/>
+                    </property>
+                </bean>
+
+            </list>
+        </property>
+    </bean>
+
+    <!--&lt;!&ndash; 属性bean 校验 &ndash;&gt;-->
+    <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">-->
+        <!--<property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>-->
+        <!--&lt;!&ndash; 这里配置将使用上面国际化配置的messageSource-->
+        <!--<property name="validationMessageSource" ref="messageSource"/>-->
+        <!--&ndash;&gt;-->
+    <!--</bean>-->
+
+    <!-- 默认的注解映射的支持 -->
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager" validator="validator">
+        <mvc:message-converters>
+            <!-- JSON消息转换器 -->
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                        <!-- 处理responseBody 里面日期类型 -->
+                        <property name="dateFormat">
+                            <bean class="java.text.SimpleDateFormat">
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+                            </bean>
+                        </property>
+                        <!-- 为null字段时不显示 -->
+                        <property name="serializationInclusion">
+                            <value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</value>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+            <!-- XML消息转换器 -->
+            <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- 内容导航管理器 -->
+    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <!-- 设置为true以忽略对Accept Header的支持 -->
+        <property name="ignoreAcceptHeader" value="true"/>
+        <!-- 在没有扩展名时即: "/user/getUser" 时的默认展现形式 -->
+        <property name="defaultContentType" value="application/json"/>
+        <!-- true，开启扩展名支持，false关闭支持 -->
+        <property name="favorPathExtension" value="false"/>
+        <!-- 用于开启 /userinfo/123?format=json 的支持 -->
+        <property name="favorParameter" value="true"/>
+        <property name="parameterName" value="format"/>
+        <property name="useJaf" value="false"/>
+
+        <!-- 扩展名至mimeType的映射,即 /user.json => application/json -->
+        <property name="mediaTypes">
+            <map>
+                <entry key="shtml" value="text/html"></entry>
+                <entry key="html" value="text/html"></entry>
+                <entry key="json" value="application/json"/>
+                <entry key="xml" value="application/xml"/>
+                <entry key="jsonp" value="application/javascript"/>
+            </map>
+        </property>
+
+    </bean>
+
+    <!-- 定义文件上传处理器： 上传文件拦截，设置最大上传文件大小 10M=10*1024*1024(B)=10485760 bytes -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- one of the properties available; the maximum file size in bytes -->
+        <property name="maxUploadSize">
+            <value>5242880</value>
+        </property>
+    </bean>
+
+</beans>

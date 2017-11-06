@@ -1,0 +1,6 @@
+models\beanExamples\UserExample.class
+models\beanExamples\UserExample$Criterion.class
+models\bean\User.class
+models\beanExamples\UserExample$Criteria.class
+models\beanExamples\UserExample$GeneratedCriteria.class
+com\education\controller\UserController.class

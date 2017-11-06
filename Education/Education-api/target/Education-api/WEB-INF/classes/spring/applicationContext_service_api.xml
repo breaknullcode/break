@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<util:map id="apiConfig" key-type="java.lang.String" value-type="java.lang.String" map-class="java.util.HashMap">
+		<!-- uuid and token -->
+		<entry key="uuid">
+			<value>123</value>
+		</entry>
+		<entry key="token">
+			<value>456</value>
+		</entry>
+
+
+
+		<!-- 订单推送 -->
+		<entry key="cps.lkt_push_order">
+			<value>
+                <![CDATA[
+				http://com.education.service.linktech.cn/purchase_cps.php?a_id=%1$s&m_id=%2$s&mbr_id=%3$s&o_cd=%4$s&p_cd=%5$s&price=%6$s&it_cnt=%7$s&c_cd=%8$s&mbr_name=%9$s
+				]]>
+            </value>
+		</entry>
+    </util:map>
+
+
+</beans>

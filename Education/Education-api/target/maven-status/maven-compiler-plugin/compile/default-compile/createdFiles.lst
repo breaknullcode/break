@@ -1,0 +1,11 @@
+com\education\models\beanExamples\CustomerExample$Criterion.class
+com\education\models\beanExamples\CustomerExample$GeneratedCriteria.class
+com\education\models\beanExamples\CustomerExample$Criteria.class
+com\education\service\UserService.class
+com\education\dao\UserMapper.class
+com\education\common\APIConstants.class
+com\education\models\bean\Customer.class
+com\education\service\UserService1.class
+com\education\controller\UserController.class
+com\education\service\impl\UserServiceImpl.class
+com\education\models\beanExamples\CustomerExample.class
