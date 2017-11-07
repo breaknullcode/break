@@ -31,7 +31,8 @@ public class UserController {
     @RequestMapping(value = ORDER + BUFFERS, method = RequestMethod.POST)
     public ResponseEntity<User> createOrderBuffers(User user) throws Exception {
 //        User user = new User():
-//这里是主干
+//z这里是我从本地主干拉的分支  修改了代码
+        //增加代码
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 }
